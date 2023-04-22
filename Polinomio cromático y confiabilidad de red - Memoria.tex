@@ -1,0 +1,300 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{tikz}
+\usepackage{amsmath}
+\usepackage{amsthm}
+
+\newtheorem{thm}{Teorema}[section]
+\newtheorem{proposition}{Proposición}[section]
+\numberwithin{figure}{section}
+\setlength{\parskip}{1em}
+
+\title{Polinomio cromático y confiabilidad de una red}
+\author{
+    Alejandro Domínguez Muñoz
+    \and
+    José Gallardo Harillo
+    \and
+    Raúl Durán García
+    \and
+    Francisco Javier Díaz Ventura
+}
+\date{Enero de 2022}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introducción}
+
+\subsection{Preámbulos}
+
+En este trabajo expondremos una extensión del polinomio cromático que ya conocemos cuyo objeto es analizar el nivel de interconexión de un sistema en una zona localizada del mismo. Para ello será necesario exponer ciertas características nuevas relacionadas con el polinomio cromático que nos ayudarán a comprender dicha modificación. La terminología que se usará es la siguiente:
+
+\begin{itemize}
+    \item $G = V \times E$ es un pseudografo, que llamaremos grafo para abreviar a lo largo de este documento.
+    \item $[m] = \{1,2,...,m\}$, siendo $m$ un número entero estrictamente positivo.
+    \item $n(G)$ ó $n$ es el número de vértices del grafo $G$.
+    \item $e(G)$ es el número de aristas del grafo $G$.
+    \item $c(G)$ es el número de componentes conexas de $G$.
+    \item $\alpha : V \to [\lambda]$ es una función que aplica un $\lambda$-coloreado en $G$.
+    \item En un grafo dirigido, un vértice $v$ puede ser:
+    \begin{itemize}
+        \item Fuente, si la valencia de entrada es 0 y la de salida es estrictamente positiva.
+        \item Sumidero, si la valencia de entrada es estrictamente positiva y la de salida es 0.
+    \end{itemize}
+\end{itemize}
+
+También hay que recordar dos características del polinomio cromático y aportar una nomenclatura alternativa, más útil para desarrollar las propiedades adicionales que se detallarán a lo largo del presente escrito. Primero, repasaremos el polinomio cromático del grafo trivial, que llamaremos \emph{condición de grafo discreto} y consiste en la siguiente expresión:
+\begin{equation*}
+    P(G; \lambda) = \lambda^n
+\end{equation*}
+
+Luego traeremos la regla de eliminación-contracción, que denominaremos \emph{condición de pivote} y cuya igualdad es la que viene a continuación:
+\begin{equation*}
+    P(G; \lambda) = P(G-x; \lambda) - P(G\ |\ x; \lambda)
+\end{equation*}
+
+\subsection{Confiabilidad de una red}
+
+La confiabilidad de una red es un índice basado en la cantidad de caminos que hay que conecten los diferentes pares posibles de vértices de un grafo. Solo por esta definición aproximada podemos establecer un vínculo con el polinomio cromático.
+    
+Para que haya más caminos tiene que haber más aristas. A más aristas, menos posibilidades de coloreado. Por consiguiente, menos posibilidades de coloreado indica una mayor confiabilidad global de la red. Es decir, el polinomio cromático da una medida aproximada, indirecta y global de la confiabilidad de toda una red, pero no de una parte de la red sin aislarla. Para solventar esta limitación, introduciremos el polinomio cromático extendido.
+
+Una aplicación práctica clara de esta propiedad de los grafos es el diseño de redes informáticas, para planificar los sistemas de redundancia que soporten fallos de conexión sin que caiga la red, modelándola mediante una representación de grafos.
+
+\section{Relación del polinomio cromático con otras propiedades}
+
+\subsection{Orientaciones acíclicas}
+
+Una orientación de un grafo (no dirigido) es una asignación de direcciones a cada arista del mismo grafo. Una orientación es acíclica si el digrafo resultante no tiene ciclos dirigidos. Se denota $N(G)$ al número de orientaciones acíclicas de $G$.
+
+Con este nuevo concepto, podemos redefinir en otros términos qué es un $\lambda$-coloreado apropiado de un grafo. Hasta el momento, definíamos esta noción única y exclusivamente bajo la comprensión intuitiva de que dicho coloreado no debe contener dos aristas adyacentes con el mismo color. Sin embargo, esta restricción también se puede expresar en términos de la necesidad de construir una orientación acíclica del grafo y una función que coloree los vértices de tal manera que todos los vértices tengan un color mayor que los siguientes vértices siguiendo la dirección de las aristas. Para verificar esta propiedad, hace falta que las etiquetas de los colores pertenezcan a un conjunto de valores ordinales, es decir, que puedan ordenarse de una forma determinada.
+
+\subsection{Actividad externa de una parte de los vértices de un grafo}
+
+Sea una arista $x$ que une dos vértices $u, v$ en un grafo, $x$ es una arista externamente activa respecto a un subconjunto $X$ de las aristas de un grafo si hay un camino $P$ que pase solo por algunas o todas las aristas en $X$ salvo la arista $x$, y además dichas aristas son todas mayores a $x$. Esto presupone que las aristas son etiquetadas partiendo de un conjunto de valores ordinales.
+
+En la Figura \ref{fig:extact} se ejemplifica un caso de arista externamente activa. Dicha arista es la 2, marcada en rojo. El camino que une sus vértices extremos está marcado con líneas discontinuas, y las etiquetas de las aristas que pertenecen a K están en naranja. Nótese que la arista 2 seguiría siendo externamente activa respecto a $X$ si perteneciera a $X$.
+
+\begin{figure}[h]
+\caption{Ejemplo de arista externamente activa respecto a $X$}
+\label{fig:extact}
+\centering
+\begin{equation*}
+    X = \{1, 3, 5, 7, 8, 9\}
+\end{equation*}
+\begin{tikzpicture}[node distance={20mm}, thick, main/.style = {draw, circle}]
+    \node[main] (a)                         {a};
+    \node[main] (b) [right of = a]          {b};
+    \node[main] (c) [below right of = b]    {c};
+    \node[main] (d) [below left of = c]     {d};
+    \node[main] (e) [left of = d]           {e};
+    \node[main] (f) [above left of = e]     {f};
+    \node[main] (g) [left of = c]           {g};
+
+    \draw           (a) -- node[above, orange]  {1} (b);
+    \draw[red]      (b) -- node[above, black]   {2} (c);
+    \draw[dashed]   (c) -- node[above, orange]  {3} (d);
+    \draw           (d) -- node[below]          {4} (e);
+    \draw           (e) -- node[below, orange]  {5} (f);
+    \draw           (f) -- node[above]          {6} (a);
+    \draw[dashed]   (f) -- node[above, orange]  {7} (d);
+    \draw[dashed]   (f) -- node[above, orange]  {8} (b);
+    \draw           (c) -- node[above, orange]  {9} (g);
+\end{tikzpicture}
+\end{figure}
+
+La cantidad de aristas que cumplen esta condición en un grafo es denominada la \emph{actividad externa de $X$ en $G$}. El siguiente teorema relaciona esta propiedad con el polinomio cromático.
+
+% Teorema 2.2
+\begin{thm}[Whitney]
+    Sea $m_j(G)$ el número de bosques recubridores de $G$ que tienen $j$ componentes conexas y actividad externa 0, entonces:
+    \begin{equation*}
+        P(G; \lambda) = \sum_{j=1}^n (-1)^{n-j}m_j(G)\lambda^j
+    \end{equation*}
+\end{thm}
+
+\subsection{Actividad interna de una parte de los vértices de un grafo}
+
+Sea una arista $x$ que une dos vértices $u, v$ en un grafo, $x$ es una arista internamente activa en un subconjunto $X$ de las aristas de un grafo, siendo además perteneciente al mismo, si $x$ no está en ningún ciclo dentro de $X$ y si para todas las aristas $y$ fuera de $X$ hay un camino $P$ que una sus vértices extremos y pase solo por algunas o todas las aristas en $X$ salvo la arista $x$, siendo todas estas aristas $y$ menores que $x$. Esto presupone que las aristas son etiquetadas partiendo de un conjunto de valores ordinales.
+
+En la Figura \ref{fig:intact} se ejemplifica un caso de arista internamente activa. Dicha arista es la 9, marcada en rojo, y las etiquetas de las aristas que pertenecen a $X$ están en naranja.
+
+\begin{figure}[h]
+\caption{Ejemplo de arista internamente activa respecto a $X$}
+\label{fig:intact}
+\centering
+\begin{equation*}
+    X = \{1, 3, 5, 7, 8, 9\}
+\end{equation*}
+\begin{tikzpicture}[node distance={20mm}, thick, main/.style = {draw, circle}]
+    \node[main] (a)                         {a};
+    \node[main] (b) [right of = a]          {b};
+    \node[main] (c) [below right of = b]    {c};
+    \node[main] (d) [below left of = c]     {d};
+    \node[main] (e) [left of = d]           {e};
+    \node[main] (f) [above left of = e]     {f};
+    \node[main] (g) [left of = c]           {g};
+
+    \draw       (a) -- node[above, orange]  {1} (b);
+    \draw       (b) -- node[above]          {2} (c);
+    \draw       (c) -- node[above, orange]  {3} (d);
+    \draw       (d) -- node[below]          {4} (e);
+    \draw       (e) -- node[below, orange]  {5} (f);
+    \draw       (f) -- node[above]          {6} (a);
+    \draw       (f) -- node[above, orange]  {7} (d);
+    \draw       (f) -- node[above, orange]  {8} (b);
+    \draw[red]  (c) -- node[above, orange]  {9} (g);
+\end{tikzpicture}
+\end{figure}
+
+La cantidad de aristas que cumplen esta condición en un grafo es denominada la \emph{actividad interna de $X$ en $G$}. El siguiente teorema relaciona esta propiedad con el polinomio cromático.
+
+% Teorema 2.3
+\begin{thm}[Tutte]
+    Sea $G$ un grafo conexo y $t_{j0}$ el número de árboles recubridores de $G$ con actividad interna $j$ y actividad externa 0, entonces:
+    \begin{equation*}
+        P(G; \lambda) = (-1)^{n-1}\lambda \sum_{j=1}^{n-1} t_{j0}(G)(1-\lambda)^j
+    \end{equation*}
+\end{thm}
+
+\subsection{Dominación}
+
+De una manera similar a lo que se hizo con el polinomio cromático, en esta sección redefiniremos desde otra óptica a la ya conocida el concepto de dominación de un grafo.
+
+\subsubsection{$K$-bosque de un grafo}
+
+Definimos un $K$-bosque de un grafo como un bosque $H$ de un grafo en el que $K$ es un subconjunto de sus vértices y al mismo tiempo este subconjunto contiene todos los vértices de valencia 0 ó 1 del bosque $H$. En base a esta noción, decimos que $F(G, K, j)$ es una función que expresa el conjunto de todos los $K$-bosques de $G$ con $j$ componentes.
+
+En este punto, vemos conveniente remarcar un vínculo intuitivo entre esta idea y lo que conocemos de la dominación de un grafo. Según entendemos hasta ahora, un conjunto de dominación es un subconjunto de vértices de un grafo que permite llegar en un solo paso a cualquiera. Resulta que en los subgrafos recubridores $S$ de $G$, se pueden obtener conjuntos de dominación en $G$ si se toman todos los vértices de valencia distinta de 1 para cada uno de ellos.
+
+\subsubsection{$j$-formación de un grafo}
+
+Una $j$-formación de un grafo es un subconjunto de $F(G, K, j)$ en el que todas las aristas combinadas de todos sus $K$-bosques de $j$ componentes conexas son todas las aristas del grafo $G$. Se dice que es par o impar según su número de elementos.
+
+\subsubsection{Dominación con signo y sin signo}
+
+La dominación con signo de $G$ con respecto a $K$ y $j$, es el número de $j$-formaciones impares menos el de j-formaciones pares. Se denota $d(G, K, j)$. La dominación sin signo, su valor absoluto, es $D(G, K, j)$.
+
+Originalmente se estudió el caso específico para $j=1$. La equivalencia de notación es la siguiente:
+\begin{equation*}
+    d_K(G) = d(G, K, 1)
+\end{equation*}
+\begin{equation*}
+    D_K(G) = D(G, K, 1)
+\end{equation*}
+
+\subsubsection{Valor absoluto de la dominación de un grafo}
+
+Para expresar el valor absoluto de la dominación de un grafo, definimos $S_O(G)$ como el conjunto de subgrafos recubridores de un grafo $G$ conexos y con un número impar de aristas, y $S_E(G)$ como el conjunto de subgrafos recubridores de un grafo $G$ conexos y con un número par de aristas. El valor absoluto de la dominación de un grafo $G$ es el siguiente:
+\begin{equation*}
+    D_V(G) = |S_O(G) - S_E(G)|
+\end{equation*}
+
+Para enunciar una proposición que establezca un vínculo entre la dominación de un grafo y su polinomio cromático, debemos conocer antes el teorema de la interpretación topológica del polinomio cromático de Whitney.
+
+\begin{thm}[Whitney]
+    Sea $R(G)$ el conjunto de subgrafos recubridores de $G$, entonces:
+    \begin{equation*}
+        P(G; \lambda) = \sum_{S \in R(G)} (-1)^{e(S)} \lambda^{c(S)}
+    \end{equation*}
+\end{thm}
+
+Conocido dicho teorema, enunciaremos nuestra proposición.
+
+\begin{proposition}
+    \begin{equation*}
+        D_V(G) = |(P(G; \lambda)/\lambda)\ |_{\lambda=0}|
+    \end{equation*}
+\end{proposition}
+\begin{proof}
+    \begin{equation*}
+        \begin{split}
+            D_V(G) &= |(\sum_{S \in R(G)} (-1)^{e(S)} \lambda^{c(S)}/\lambda)\ |_{\lambda=0}|
+                   \\
+                   &= |(\lambda \sum_{S \in R(G)} (-1)^{e(S)} 0^{c(S)-1})/\lambda|
+                   \\
+                   &= |\sum_{S \in R(G)} (-1)^{e(S)} 0^{c(S)-1}|
+                   \\
+                   &= |\sum_{S \in R(G) : c(S) = 1} (-1)^{e(S)}|
+        \end{split}
+    \end{equation*}
+    El coeficiente de $\lambda$ cuando $\lambda = 0$ da lugar a la penúltima y, por consiguiente, la última expresión, que indica que se contará cada ocurrencia del subgrafo recubridor conexo cancelándose entre los que tienen número de aristas par y los que tienen número de aristas impar. Como solo tenemos en cuenta el valor absoluto, son expresiones equivalentes.
+\end{proof}
+
+\section{Polinomio cromático extendido}
+
+Para poder definir el polinomio cromático extendido, necesitamos comprender una variación del concepto de orientación acíclica.
+
+Sea $K$ un subconjunto de los vértices de un grafo $G$, una orientación $K$-acíclica de $G$ es una orientación acíclica de $G$ con todos los vértices fuente y sumidero en $K$. Todo el conjunto de orientaciones $K$-acíclicas de un grafo posibles lo denotaremos $N_K(G)$.
+
+De aquí se deduce que un $\lambda$-coloreado apropiado de $K$ en $G$ se asemeja a la noción de $\lambda$-coloreado apropiado de $G$ con la diferencia de que no se toma una orientación acíclica sino una orientación $K$-acíclica en cada par $(D, \alpha)$ posible para $G$. Habrá menos coloreados apropiados de $K$ en $G$ que de $G$ a secas por el simple hecho de que toda orientación $K$-acíclica es una orientación acíclica, pero no al revés.
+
+Ahora sí nos encontramos en condiciones de abordar la tarea principal de este trabajo.
+
+Sea $K$ un subconjunto de los vértices de un grafo $G$ e $i$ el número de vértices aislados fuera de $K$, el polinomio cromático $P(G, K; \lambda)$ es $(-1)^{n-|K|-i}$ veces el número de $\lambda$-coloreados apropiados distintos de K en G. Esto hace que, por definición, $P(G, V; \lambda) = P(G; \lambda)$.
+
+\subsection{Casos específicos}
+
+A continuación, detallaremos algunas casuísticas donde se conoce el resultado del polinomio cromático extendido o alguna clase de equivalencia.
+
+\subsubsection{No hay coloración $K$-apropiada}
+    Hay dos casos en los que, independientemente de la paleta de colores usada, $P(G, K; \lambda) = 0$:
+    \begin{itemize}
+        \item No hay orientaciones acíclicas porque hay alguna arista bucle.
+        \item No hay orientaciones $K$-acíclicas porque hay algún vértice fuera de $K$ de valencia 1, dado que dicho vértice solo puede ser fuente o sumidero. Al no estar en $K$, por definición no hay orientaciones $K$-acíclicas posibles.
+    \end{itemize}
+
+\subsubsection{Unión disjunta de dos grafos}
+    Dado que las coloraciones apropiadas posibles de un grafo con varias componentes conexas es el producto cartesiano de las coloraciones apropiadas posibles de cada componente conexa, obtenemos por definición la siguiente equivalencia para las uniones disjuntas:
+    \begin{equation*}
+        P(G_1 \bigsqcup G_2, K; \lambda) = P(G_1, K \cap V(G_1); \lambda) \cdot P(G_2, K \cap V(G_2); \lambda)
+    \end{equation*}
+
+\subsubsection{Vértice aislado fuera de $K$}
+    En caso de haber uno o varios vértices aislados $a$ fuera de $K$, el polinomio cromático extendido del grafo en cuestión da el mismo resultado si se eliminan dichos vértices aislados fuera de $K$. Es decir, de cumplirse dicha condición, esta igualdad es válida:
+    \begin{equation*}
+        P(G, K; \lambda) = P(G - a, K; \lambda)
+    \end{equation*}
+    
+    Esto ocurre porque los vértices aislados no limitan las posibilidades de coloreado en el contexto del grafo en el que se encuentra el subconjunto de vértices $K$.
+
+\subsection{Adaptación de la condición de grafo discreto y de pivote}
+
+Aunque ya conocemos la condición de grafo discreto y de pivote para el polinomio cromático, estas equivalencias no son válidas directamente para el polinomio cromático extendido, así que requieren ser modificadas para funcionar en este nuevo contexto.
+
+\subsubsection{Ecuación de la condición de pivote}
+    Decimos que una función $f$ satisface la condición de pivote si para cualquier grafo $G$ y arista $x$ del mismo cumple la siguiente igualdad:
+    \begin{equation*}
+        f(G, K, \lambda) = f(G - x, K; \lambda) - f(G\ |\ x, K\ |\ x; \lambda)
+    \end{equation*}
+    Así mismo, sean $f,\ g$ dos funciones que satisfacen la condición de pivote, si además son iguales para todos los grafos de $m$ aristas, entonces son iguales para todos los grafos de $m$ ó más aristas.
+
+\subsubsection{Ecuaciones de la condición de grafo discreto y de pivote}
+    Hay como mucho una función de la forma $f(G, K, \lambda)$ que devuelve un valor entero y que satisfaga simultáneamente las dos siguientes igualdades para cualquier grafo $G$ y arista $x$ de $G$:
+    \begin{equation*}
+        f(G, K; \lambda) = \lambda^{|K|}
+    \end{equation*}
+    \begin{equation*}
+        f(G, K; \lambda) = f(G - x, K; \lambda) - f(G\ |\ x, K\ |\ x; \lambda)
+    \end{equation*}
+
+    $P(G, K; \lambda)$ cumple tanto la condición de grafo discreto como la de pivote, ambas adaptadas, por lo que es la única función que cumple ambas condiciones.
+
+\subsubsection{Condición de pivote y número de orientaciones $K$-acíclicas}
+    Para acabar, consideramos deseable cerrar este recorrido relacionando la condición de pivote que acabamos de deducir para el polinomio cromático extendido con el número de orientaciones $K$-acíclicas.
+    
+    Sea $x$ una arista $K$-apropiada de un grafo $G$ (esto es, una arista cuyos vértices extremos están en $K$ o, de estar solo uno de sus vértices extremos fuera de $K$, tiene una valencia distinta de 1), el conjunto de orientaciones $K$-acíclicas de $G$ cumple la siguiente propiedad:
+    \begin{equation*}
+        N_K(G) = N_K(G - x) + N_K(G\ |\ x)
+    \end{equation*}
+    Por lo tanto, y como corolario, se cumple la siguiente equivalencia para cualquier arista $x$ de $G$ como pivote:
+    \begin{equation*}
+        N(G - x) + N(G\ |\ x)
+    \end{equation*}
+
+\end{document}

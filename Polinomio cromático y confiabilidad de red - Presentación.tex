@@ -1,0 +1,392 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{tikz}
+
+\usetheme{Copenhagen}
+\newtheorem*{thm}{Teorema}
+\newtheorem*{proposition}{Proposición}
+
+\title{Polinomio cromático y confiabilidad de una red}
+\author{
+    Alejandro Domínguez Muñoz
+    \and\break
+    José Gallardo Harillo
+    \and\break
+    Raúl Durán García
+    \and\break
+    Francisco Javier Díaz Ventura
+}
+\institute{Universidad de Sevilla}
+\date{Enero de 2022}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\frame{\tableofcontents}
+
+\section{Introducción}
+
+\begin{frame}{Terminología}
+    \begin{itemize}
+        \item $G = V \times E$ es un pseudografo (lo llamaremos grafo para abreviar)
+        \item $m \in \mathbb{Z}^+, [m] = \{1,2,...,m\}$
+        \item $n(G) = |V|$ (a veces se llamará $n$ para abreviar)
+        \item $e(G) = |E|$
+        \item $c(G)$ es el número de componentes conexas de $G$
+        \item $\alpha : V \to [\lambda]$ es un $\lambda$-coloreado de $G$
+        \item En un grafo dirigido, un vértice $v$ puede ser:
+        \begin{itemize}
+            \item Fuente si $\delta_i(v) = 0 \land \delta_o > 0$
+            \item Sumidero si $\delta_i > 0 \land \delta_o(v) = 0$
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Recordatorio}
+    \begin{itemize}
+        \item Condición de grafo discreto:
+        \begin{equation*}
+            P(G; \lambda) = \lambda^n
+        \end{equation*}
+        \item Condición de pivote:
+        \begin{equation*}
+            P(G; \lambda) = P(G-x; \lambda) - P(G\ |\ x; \lambda)
+        \end{equation*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Confiabilidad de una red}
+    \begin{itemize}
+        \item<1-> ¿Cuántos caminos hay que conecten dos nodos?
+        \item<1-> Aplicaciones: redes informáticas (que se modelan con grafos)
+        % Para que haya más caminos tiene que haber más conexiones (aristas)
+        % A más aristas, menos posibilidades de coloreado
+        % Por consiguiente, menos posibilidades de coloreado indica una mayor confiabilidad global de la red
+        \item<2-> El polinomio cromático da una medida aproximada, indirecta y global de la confiabilidad de toda una red...
+        \item<3-> \emph{...pero no de una parte de la red sin aislarla}
+        % Para solventar esta limitación, introduciremos el polinomio cromático extendido
+    \end{itemize}
+\end{frame}
+
+\section{Relación del polinomio cromático con otras propiedades}
+
+\subsection{Orientaciones acíclicas}
+
+\begin{frame}{Orientación de un grafo}
+    \begin{itemize}
+        \item Una orientación de un grafo es una asignación de direcciones a cada arista del grafo
+        \item Una orientación es acíclica si el digrafo resultante no tiene ciclos dirigidos, y viceversa
+        \item $N(G)$ es el número de orientaciones acíclicas de $G$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{$\lambda$-coloreado apropiado de un grafo}
+    \begin{itemize}
+        \item<1-> Un $\lambda$-coloreado apropiado de $G$ es un par ($D$, $\alpha$)
+        \begin{itemize}
+            \item $\alpha : V \rightarrow [\lambda]$ es un coloreado
+            \item $D$ es una orientación acíclica de $G$ tal que si $u,\ v \in V$ y hay un camino dirigido en $D$ desde $u$ hasta $v$, entonces $\alpha(u) > \alpha(v)$
+        \end{itemize}
+        \item<2-> En este contexto, se dice que $D$ es una orientación $\alpha$-compatible
+    \end{itemize}
+\end{frame}
+
+\subsection{Actividad externa de una parte de los vértices de un grafo}
+
+\begin{frame}{Arista externamente activa respecto a una parte de los vértices de un grafo}
+    \only<1>{
+    \begin{itemize}
+        \item Sea $u, v \in V,\ x \in E : x = \{u, v\}$
+        \item $x$ es una arista externamente activa respecto a $X \subset E$ si:
+        \begin{itemize}
+            \item Hay un camino $P : E(P) \subset X - \{x\}$ entre $u, v$
+            \item $\forall y \in E(P) : x < y$
+        \end{itemize}
+        \item La actividad externa de $X$ en $G$ es el número de aristas de $G$ que son externamente activas respecto a $X$
+    \end{itemize}
+    }
+    \only<2>{
+        \centering
+        \begin{equation*}
+            X = \{1, 3, 5, 7, 8, 9\}
+        \end{equation*}
+        \begin{tikzpicture}[node distance={20mm}, thick, main/.style = {draw, circle}]
+            \node[main] (a)                         {a};
+            \node[main] (b) [right of = a]          {b};
+            \node[main] (c) [below right of = b]    {c};
+            \node[main] (d) [below left of = c]     {d};
+            \node[main] (e) [left of = d]           {e};
+            \node[main] (f) [above left of = e]     {f};
+            \node[main] (g) [left of = c]           {g};
+
+            \draw           (a) -- node[above, orange]  {1} (b);
+            \draw[red]      (b) -- node[above, black]   {2} (c);
+            \draw[dashed]   (c) -- node[above, orange]  {3} (d);
+            \draw           (d) -- node[below]          {4} (e);
+            \draw           (e) -- node[below, orange]  {5} (f);
+            \draw           (f) -- node[above]          {6} (a);
+            \draw[dashed]   (f) -- node[above, orange]  {7} (d);
+            \draw[dashed]   (f) -- node[above, orange]  {8} (b);
+            \draw           (c) -- node[above, orange]  {9} (g);
+        \end{tikzpicture}
+    }
+\end{frame}
+
+\begin{frame}{Polinomio cromático según la actividad externa}
+    % Teorema 2.2
+    \begin{thm}[Whitney]
+        Sea $m_j(G)$ el número de bosques recubridores de $G$ que tienen $j$ componentes conexas y actividad externa 0, entonces:
+        \begin{equation*}
+            P(G; \lambda) = \sum_{j=1}^n (-1)^{n-j}m_j(G)\lambda^j
+        \end{equation*}
+    \end{thm}
+\end{frame}
+
+\subsection{Actividad interna de una parte de los vértices de un grafo}
+
+\begin{frame}{Arista internamente activa respecto a una parte de los vértices de un grafo}
+    \only<1>{
+        \begin{itemize}
+            \item Una arista $x \in X$ es internamente activa en $X$ si:
+            \begin{itemize}
+                \item $x$ no está en ningún ciclo dentro de $X$
+                \item Hay un camino $P : E(P) \subset X - \{x\}$ que conecta los vértices extremos de $\forall y \in E - X : y < x$
+            \end{itemize}
+            \item La actividad interna de X es el número de aristas de X que son internamente activas
+        \end{itemize}
+    }
+    \only<2>{
+        \centering
+        \begin{equation*}
+            X = \{1, 3, 5, 7, 8, 9\}
+        \end{equation*}
+        \begin{tikzpicture}[node distance={20mm}, thick, main/.style = {draw, circle}]
+        \node[main] (a)                         {a};
+            \node[main] (b) [right of = a]          {b};
+            \node[main] (c) [below right of = b]    {c};
+            \node[main] (d) [below left of = c]     {d};
+            \node[main] (e) [left of = d]           {e};
+            \node[main] (f) [above left of = e]     {f};
+            \node[main] (g) [left of = c]           {g};
+
+            \draw       (a) -- node[above, orange]  {1} (b);
+            \draw       (b) -- node[above]          {2} (c);
+            \draw       (c) -- node[above, orange]  {3} (d);
+            \draw       (d) -- node[below]          {4} (e);
+            \draw       (e) -- node[below, orange]  {5} (f);
+            \draw       (f) -- node[above]          {6} (a);
+            \draw       (f) -- node[above, orange]  {7} (d);
+            \draw       (f) -- node[above, orange]  {8} (b);
+            \draw[red]  (c) -- node[above, orange]  {9} (g);
+        \end{tikzpicture}
+    }
+\end{frame}
+
+\begin{frame}{Polinomio cromático según la actividad interna}
+    % Teorema 2.3
+    \begin{thm}[Tutte]
+        Sea $G$ un grafo conexo y $t_{j0}$ el número de árboles recubridores de $G$ con actividad interna $j$ y actividad externa 0, entonces:
+        \begin{equation*}
+            P(G; \lambda) = (-1)^{n-1}\lambda \sum_{j=1}^{n-1} t_{j0}(G)(1-\lambda)^j
+        \end{equation*}
+    \end{thm}
+\end{frame}
+
+\subsection{Dominación}
+
+\begin{frame}{$K$-bosque de un grafo}
+    \begin{itemize}
+        \item Un bosque $H$ de $G$ es un $K$-bosque si:
+        \begin{equation*}
+            K \subseteq V(H) \land \{a \in V(H) : \delta(a) \in \{0, 1\}\} \subseteq K
+        \end{equation*}
+        \item $F(G, K, j)$ es el conjunto de todos los $K$-bosques de $G$ con $j$ componentes
+    \end{itemize}
+    \uncover<2>{
+        \begin{block}{Nota}
+            En los subgrafos recubridores $S$ de $G$, $\{a \in V(S) : \delta(a) \neq 1\}$ es uno de los conjuntos de dominación de $G$
+        \end{block}
+    }
+\end{frame}
+
+\begin{frame}{$j$-formación de un grafo}
+    \begin{itemize}
+        \item Sea $K \subset V,\ F \subset F(G, K, j)$
+        \item $F$ es una $j$-formación de $G$ si:
+        \begin{equation*}
+            \{x \in E(H) : H \in F\} = E(G)
+        \end{equation*}
+        \item Una $j$-formación es par o impar según su número de elementos
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Dominación con signo y sin signo}
+    \begin{itemize}
+        \item La dominación con signo de $G$ con respecto a $K$ y $j$, es el número de $j$-formaciones impares menos el número de j-formaciones pares. Se denota $d(G, K, j)$.
+        \item La dominación sin signo es $D(G, K, j) = |d(G, K, j)|$
+        \item Originalmente se estudió el caso específico para $j=1$
+        \begin{equation*}
+            d_K(G) = d(G, K, 1)
+        \end{equation*}
+        \begin{equation*}
+            D_K(G) = D(G, K, 1)
+        \end{equation*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Interpretación topológica del polinomio cromático}
+    \begin{thm}[Whitney]
+        Sea $R(G)$ el conjunto de subgrafos recubridores de $G$, entonces:
+        \begin{equation*}
+            P(G; \lambda) = \sum_{S \in R(G)} (-1)^{e(S)} \lambda^{c(S)}
+        \end{equation*}
+    \end{thm}
+\end{frame}
+
+\begin{frame}{Valor absoluto de la dominación de un grafo}
+    \only<1>{
+        \begin{equation*}
+            S_O(G) = |\{S \in R(G) : c(S) = 1, e(S) \mod 2 \equiv 1\}|
+        \end{equation*}
+        \begin{equation*}
+            S_E(G) = |\{S \in R(G) : c(S) = 1, e(S) \mod 2 \equiv 0\}|
+        \end{equation*}
+        \begin{equation*}
+            D_V(G) = |S_O(G) - S_E(G)|
+        \end{equation*}
+        \begin{proposition}
+            \begin{equation*}
+                D_V(G) = |(P(G; \lambda)/\lambda)\ |_{\lambda=0}|
+            \end{equation*}
+        \end{proposition}
+    }
+    \only<2>{
+        \begin{proof}
+            \begin{equation*}
+                \begin{split}
+                    % Partimos desde el teorema de la interpretación topológica del polinomio cromático de Whitney
+                    D_V(G) &= |(\sum_{S \in R(G)} (-1)^{e(S)} \lambda^{c(S)}/\lambda)\ |_{\lambda=0}|
+                           \\
+                           &= |(\lambda \sum_{S \in R(G)} (-1)^{e(S)} 0^{c(S)-1})/\lambda|
+                           \\
+                           &= |\sum_{S \in R(G)} (-1)^{e(S)} 0^{c(S)-1}|
+                           \\
+                           % El coeficiente de \lambda cuando \lambda = 0 da lugar a esta expresión,
+                           % que indica que se contará cada % ocurrencia de subgrafo recubridor conexo
+                           % cancelándose entre aquellos con número de aristas par e impar.
+                           % Como solo tenemos en cuenta el valor absoluto, son expresiones equivalentes.
+                           &= |\sum_{S \in R(G) : c(S) = 1} (-1)^{e(S)}|
+                \end{split}
+            \end{equation*}
+        \end{proof}
+    }
+\end{frame}
+
+\section{Polinomio cromático extendido}
+
+\subsection{Definición}
+
+\begin{frame}{Orientación $K$-acíclica de un grafo}
+    \begin{itemize}
+        \item Sea $K \subset V$
+        \item Una orientación $K$-acíclica de $G$ es una orientación acíclica de $G$ con todos los vértices fuente y sumidero en $K$
+        \item El número de orientaciones $K$-acíclicas de $G$ se denotará como $N_K(G)$
+        \item $N_V(G) = N(G)$
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Polinomio cromático extendido}
+    \begin{itemize}
+        \item Sea $i = |\{a \in V - K : \delta(a) = 0\}|$
+        \item $P(G, K; \lambda)$ es $(-1)^{n-|K|-i}$ veces el número de $\lambda$-coloreados apropiados distintos de K en G.
+        \item $P(G, V; \lambda) = P(G; \lambda)$
+    \end{itemize}
+\end{frame}
+
+\subsection{Casos específicos}
+
+\begin{frame}{No hay coloración $K$-apropiada}
+    Hay dos casos en los que $\forall \lambda : P(G, K; \lambda) = 0$:
+    \begin{itemize}
+        \item No hay orientaciones acíclicas:
+        \begin{equation*}
+            % Hay alguna arista bucle
+            \exists x \in E : \forall a \in V,\ x = \{a, a\}
+        \end{equation*}
+        % a solo podrá ser un vértice fuente o sumidero, y esto sin estar en K
+        \item No hay orientaciones $K$-acíclicas:
+        \begin{equation*}
+            % Hay algún vértice que no es K-apropiado, es decir, está fuera de K y tiene valencia 1
+            \exists a \in V - K : \delta(a) = 1
+        \end{equation*}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Unión disjunta de dos grafos}
+    \begin{equation*}
+        P(G_1 \bigsqcup G_2, K; \lambda) = P(G_1, K \cap V(G_1); \lambda) \cdot P(G_2, K \cap V(G_2); \lambda)
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{Vértice aislado fuera de $K$}
+    \begin{equation*}
+        \forall a \in \{a \in V - K : \delta(a) = 0\} : P(G, K; \lambda) = P(G - a, K; \lambda)
+    \end{equation*}
+\end{frame}
+
+\subsection{Adaptación de la condición de grafo discreto y de pivote}
+
+\begin{frame}{Ecuación de la condición de pivote}
+    Decimos que una función $f$ satisface la condición de pivote si:
+    \begin{equation*}
+        \forall G,\ \forall x \in E(G) : f(G, K; \lambda) = f(G - x, K; \lambda) - f(G\ |\ x, K\ |\ x; \lambda)
+    \end{equation*}
+    Sean $f,\ g$ dos funciones que satisfacen la condición de pivote:
+    \begin{multline*}
+        \exists m \in \mathbb{Z}^+,\ \forall G \in \{G : e(G) = m\} : f(G, K; \lambda) = g(G, K; \lambda)
+        \\
+        \rightarrow \forall G \in \{G : e(G) \geq m\} : f(G, K; \lambda) = g(G, K; \lambda)
+    \end{multline*}
+\end{frame}
+
+\begin{frame}{Ecuación de la condición de grafo discreto y de pivote}
+    Hay como mucho una función $f : G \rightarrow K \rightarrow \lambda \rightarrow \mathbb{Z}$ que satisface las siguientes dos condiciones simultáneamente:
+    \begin{equation*}
+        \forall G \in \{G : e(G) = 0\} : f(G, K; \lambda) = \lambda^{|K|}
+    \end{equation*}
+    \begin{equation*}
+        \forall G,\ \forall x \in E(G) : f(G, K; \lambda) = f(G - x, K; \lambda) - f(G\ |\ x, K\ |\ x; \lambda)
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{Ecuación de grafo discreto y de pivote para $P(G, K; \lambda)$}
+    \begin{itemize}
+        \item<1-> $P(G, K; \lambda)$ cumple tanto la condición de grafo discreto como la de pivote, ambas adaptadas
+        \item<2-> Por lo tanto, es la única función que cumple ambas condiciones
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Arista $K$-apropiada}
+    Una arista $x$ es $K$-apropiada en $G$ si:
+    \begin{equation*}
+        x = \{u, v\}
+    \end{equation*}
+    \begin{equation*}
+        (u \in K \land v \in K) \lor (v \in K \land \delta(u) \neq 1) \lor (u \in K \land \delta(v) \neq 1)
+    \end{equation*}
+\end{frame}
+
+\begin{frame}{Condición de pivote y número de orientaciones ($K$-)acíclicas}
+    Sea $x$ una arista $K$-apropiada de $G$:
+    \begin{equation*}
+        N_K(G) = N_K(G - x) + N_K(G\ |\ x)
+    \end{equation*}
+    Por lo tanto:
+    \begin{equation*}
+        \forall x \in E : N(G) = N(G - x) + N(G\ |\ x)
+    \end{equation*}
+\end{frame}
+
+\end{document}
