@@ -4,6 +4,12 @@
 \usepackage{tikz}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage[hidelinks]{hyperref}
+\usepackage{biblatex}
+\usepackage{csquotes}
+
+\addbibresource{references.bib}
+\nocite{*}
 
 \newtheorem{thm}{Teorema}[section]
 \newtheorem{proposition}{Proposición}[section]
@@ -296,5 +302,7 @@ Aunque ya conocemos la condición de grafo discreto y de pivote para el polinomi
     \begin{equation*}
         N(G - x) + N(G\ |\ x)
     \end{equation*}
+
+\printbibliography[title={Bibliografía}]
 
 \end{document}

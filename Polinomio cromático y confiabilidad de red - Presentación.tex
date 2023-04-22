@@ -2,6 +2,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{tikz}
+\usepackage{biblatex}
+\usepackage{csquotes}
+
+\addbibresource{references.bib}
+\nocite{*}
 
 \usetheme{Copenhagen}
 \newtheorem*{thm}{Teorema}
@@ -387,6 +392,10 @@
     \begin{equation*}
         \forall x \in E : N(G) = N(G - x) + N(G\ |\ x)
     \end{equation*}
+\end{frame}
+
+\begin{frame}{Bibliografía}
+    \printbibliography[title={Bibliografía}]
 \end{frame}
 
 \end{document}
